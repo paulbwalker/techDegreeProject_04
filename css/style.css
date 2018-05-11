@@ -139,3 +139,60 @@ h1 {
       background-image: url(../img/x.svg); }
 
 
+/* MY STYLES =============================================================================*/
+
+.hide-page {
+  display: none;
+}
+.container {
+  width: 35%;
+  margin: 20px auto;
+}
+.container:first-child {
+  margin-top: 50px;
+}
+.container:last-child {
+  margin-top: 50px;
+}
+label {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #d5f6df;
+  display: inline-block;
+  padding-right: 20px;
+}
+input {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #604a5c;
+  width: 60%;
+  height: 3em;
+  border-radius: .5rem;
+  background-color: #d5f6df;
+  display: inline-block;
+  padding-left: 20px;
+}
+input:first-child {
+  margin-left: 30px;
+  border: 1px solid blue;
+}
+h2 {
+  font-size: 3.0em;
+  text-align: center;
+}
+.player1 {
+  background-color: #FFA000;
+  padding: 10px 20px;
+  border-radius: .75rem;
+  text-align: left;
+}
+.player2 {
+  background-color: #3688C3;
+  padding: 10px 20px;
+  border-radius: .75rem;
+}
+#username1 {
+  margin-left: 25px;
+}
+
+
