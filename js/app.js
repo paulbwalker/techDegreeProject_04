@@ -1,15 +1,20 @@
-// Wrap my code in a self executing function.
-(function() {
-/* ASSIGN GOBAL VARIABLES TO THE VARIOUS PAGE STATES ---------------------------------------------------- */
-  const startPage = document.getElementById('start');
-  const gamePage = document.getElementById('board');
-  const winnerPage = document.getElementById('finish');
-  // Assign gobal variables to different pieces needed to create the tic-tac-toe game.
+/* I WRAPPED MY GAME IN A GLOBAL IFEE ------------------------------------------------------ */
+  
+  (function() { 
+
+// Assign gobal variables to different pieces needed to create the tic-tac-toe game.
   let origBoard;
   let gameBoard;
+    let huPlayer = 'O'; 
+    let player1NameValue = document.getElementById('username1').value;
+  let player2NameValue = document.getElementById('username2').value;
+  const aiPlayerValue = 'Computer';
+  const defaultPlayer1 = 'Player 1';
+  const defaultPlayer2 = 'Player 2';
+  let player1 = 'O';
+  let player2 = 'X'
+  const aiPlayer = 'X';
   let turns = 0;
-  let huPlayer = 'O';
-  let aiPlayer = 'X';
   const winCombos =[
     [0, 1, 2],
     [3, 4, 5],
@@ -25,171 +30,264 @@
   const boxes = document.querySelectorAll('.box');
   const winMessage = document.getElementById('finish');
   const winOrTie = document.getElementsByClassName('message')[0];
-  const cells = document.querySelectorAll('.box');
 
-// This is a simple function to hide the pages that is not needed when getinfo is shown.
-  const showStart = () => {
-    gamePage.classList.add('hide-page');
-    winnerPage.classList.add('hide-page');
+
+  /* CREATED AN OBJECT THAT SHOWS OR HIDE PAGES WITHIN THE GAME ---------------------------------- */
+  const showPage = (function() {
+  // The variable are consider private within this function and cannot be access outside this function.
+    let start = document.getElementById('start');
+    let board = document.getElementById('board');
+    let finish = document.getElementById('finish');
+  // These function is public and can be called outside this function.
+    return {
+      startPage: function() {
+        start.classList.remove('hide-page');
+        board.classList.add('hide-page');
+        finish.classList.add('hide-page');
+      },
+      gamePage: function() {
+        board.classList.remove('hide-page');
+        start.classList.add('hide-page');
+        finish.classList.add('hide-page');
+      },
+      finishPage: function() {
+        finish.classList.remove('hide-page');
+        start.classList.add('hide-page');
+        board.classList.add('hide-page');
+      }
+    }
+  }());
+
+  /* CREATED AN OBJECT THAT SHOWS ICONS WHEN MOUSE OVER SQUARES ---------------------------------- */
+  const myMouseOver = (function () {
+    let test = document.querySelector('.boxes');
+    return {
+      playerO: function() {
+        test.addEventListener("mouseover", function( event ) {
+          event.target.style.backgroundImage = 'url(img/o.svg)';
+          test.addEventListener("mouseout", function( event ) {
+            event.target.style.backgroundImage = '';
+          }, false);
+        }, false);  
+      },
+      playerX: function() {
+        test.addEventListener("mouseover", function( event ) {
+          event.target.style.backgroundImage = 'url(img/x.svg)';
+          test.addEventListener("mouseout", function( event ) {
+            event.target.style.backgroundImage = '';
+          }, false);
+        }, false);      
+      }
+    }
+
+  }());
+
+
+  // //create new start page
+  // const startPage = new Page('screen screen-start', 'start', 'Tic Tac Toe', 'message', 'none');
+  const startPage = showPage.startPage();
+  const startGame = () => {
+    origBoard = Array.from(Array(9).keys());
+    for (let i = 0; i < boxes.length; i++) {
+        boxes[i].classList.remove('box-filled-1');
+        boxes[i].classList.remove('box-filled-2');
+      boxes[i].style.removeProperty('background-color');
+        boxes[i].addEventListener('click', turnClick, false);
+     }
+  // This class is added to tell user who goes first which is O.
+     return liFirstChild.classList.add('active'); 
   }
-showStart();
 
-
-// Removes the screen callouts win-one, win-two, or win-tie.
-  const reset = () => {
-    gamePage.classList.remove('hide-page');
-    startPage.classList.add('hide-page');
-    winnerPage.classList.add('hide-page');
+  // Resets and removes the screen callouts win-one, win-two, or win-tie.
+    const reset = () => {
     winMessage.classList.remove('screen-win-one');
     winMessage.classList.remove('screen-win-two');
     winMessage.classList.remove('screen-win-tie');
     winMessage.style.backgroundColor = '';
 
-// This function clears out all the x's and o's that was played in the previous game.
+  // This function clears out all the x's and o's that was played in the previous game.
     startGame();
+  // Call out the tic tac toe game page.
+    showPage.gamePage();
    }
-
-/* THIS FUNCTION TAKES THE USERNAME & PLAYER WITH THE MINIMAX COMPUTER ---------------------------------- */
-
+    // Gathers the information in the input boxes.
   const getInfo = () => {
-    startPage.classList.add('hide-page');
-    gamePage.classList.remove('hide-page');
-    let player1 = document.getElementById('username1').value;
-    let defaultPlayer1 = 'Player 1';
-    let defaultPlayer2 = 'Computer';
-
-    let computer = document.getElementById('computer-check');
-    let aiPlayer = 'Computer';
-
-    // The computer is player 2.
-    document.getElementsByTagName('h2')[0].innerHTML = `
-          <span class="player1">${player1 || defaultPlayer1}</span>
-          vs <span class="player2">${aiPlayer}</span>
+    const computer = document.getElementById('computer-check');
+    player1NameValue = document.getElementById('username1').value;
+    player2NameValue = document.getElementById('username2').value;
+    showPage.gamePage();
+    // If computer textbox is checked and user will play with computer else plays headToHead.
+    if (computer.checked) {
+      document.getElementsByTagName('h2')[0].innerHTML = `
+          <span class="player1">${player1NameValue || defaultPlayer1}</span> 
+          vs <span class="player2">${aiPlayerValue}</span>
         `;
+      return player1VsComputer();
+    } else {
+      document.getElementsByTagName('h2')[0].innerHTML = `
+          <span class="player1">${player1NameValue || defaultPlayer1}</span> 
+          vs <span class="player2">${player2NameValue || defaultPlayer2 || aiPlayerValue}</span>
+        `;
+      return player1VsPlayer2();
+    }
   }
 
-/* THIS FUNCTION STARTS THE GAME -------------------------------------------------------------- */
+/* PLAYER1 VERSUS PLAYER2 ----------------------------------------------------------------------- */
 
-startGame();
-huMark();
-
-// Clears out all the marking from the previous game if played.
-function startGame() {
-  origBoard = Array.from(Array(9).keys());
-  for (let i = 0; i < boxes.length; i++) {
-    boxes[i].classList.remove('box-filled-1');
-    boxes[i].classList.remove('box-filled-2');
-    boxes[i].style.removeProperty('background-color');
-    boxes[i].addEventListener('click', turnClick, false);
+  // I set it up this way to use common functions with player1VsComputer.
+  const player1VsPlayer2 = () => { 
+    return startGame();
   }
-}
 
- function turnClick(square) {
-  if (typeof origBoard[square.target.id] === 'number') {
-      turn(square.target.id, huPlayer);
-    if (!checkTie()) turn(bestSpot(), aiPlayer);
+  const turnClick = (square) => {
+    if (typeof origBoard[square.target.id] === 'number' && !checkTie()) {
+      if (turns === 0) {
+        turn(square.target.id, player1);
+        turns += 1; 
+        myMouseOver.playerX();  
+      } else{
+        turn(square.target.id, player2);
+        turns -= 1;
+        myMouseOver.playerO();
+      }
+    }
   }
- }
-   function huMark() {
+
+  const turn = (squareId, player) => {
+    origBoard[squareId] = player;
+    if (player === player1) {
+      document.getElementById(squareId).classList.add('box-filled-1');  
+      liLastChild.classList.add('active');
+      liFirstChild.classList.remove('active');
+    } else {
+      document.getElementById(squareId).classList.add('box-filled-2');
+      liFirstChild.classList.add('active');
+      liLastChild.classList.remove('active');
+    } 
+    let gameWon = checkWin(origBoard, player);
+    if (gameWon) gameOver(gameWon);
+    checkTie();
+  }
+
+  const checkWin = (board, player) => {
+    let plays = board.reduce((a, e, i) => (e === player) ? a.concat(i) : a, []);
+    let gameWon = null;
+    for (let [index, win] of winCombos.entries()) {
+      if (win.every(elem => plays.indexOf(elem) > -1)) {
+        gameWon = {index: index, player: player};
+        break;
+      }
+    }
+    return gameWon;
+  }
+
+  const gameOver = (gameWon) => {
+    let loser = document.getElementsByClassName('message')[0];
+      for (let index of winCombos[gameWon.index]) {
+        winMessage.style.backgroundColor =
+        gameWon.player === huPlayer ? '#FFA000' : '#3688C3';
+      }
+      for (let i = 0; i < boxes.length; i++) {
+      boxes[i].removeEventListener('click', turnClick, false);
+    }
+   declareWinner(gameWon.player === huPlayer ? `Winner: ${player1NameValue}` : `Winner: ${player2NameValue || aiPlayerValue}`);
+
+  }
+
+  const declareWinner = (who) => {
+    if (who === 'It\'s a Tie!') {
+      winMessage.classList.add('screen-win-tie');
+    } else if (who === `Winner: ${player1NameValue}`) {
+
+      winMessage.classList.add('screen-win-one');
+    } else if (who === `Winner: ${player2NameValue || aiPlayerValue }`) {
+      winMessage.classList.add('screen-win-two');
+    }
+    winOrTie.innerHTML = who;
+    showPage.finishPage();
+  }
+
+  const emptySquares = () => {
+    return origBoard.filter(s => typeof s === 'number');
+  }
+
+  const checkTie = () => {
+    if(emptySquares().length === 0) {
+      for (let i = 0; i < boxes.length; i++) {
+        // this clears out all the marks on the board.
+        boxes[i].removeEventListener('click', turnClick, false);
+      }
+      declareWinner("It's a Tie!");
+      return true;
+    }
+    return false;
+  }
+
+/* VERSUS AIPLAYER ----------------------------------------------------------------------- */
+
+  // This function is similar with startGame but the EventListener goes to different area.
+  const startComputerGame = () => {
+    origBoard = Array.from(Array(9).keys());
+    for (let i = 0; i < boxes.length; i++) {
+        boxes[i].classList.remove('box-filled-1');
+        boxes[i].classList.remove('box-filled-2');
+      boxes[i].style.removeProperty('background-color');
+        boxes[i].addEventListener('click', aiClick, false);
+     }
+     // This class is added to tell user who goes first which is O.
+     return liFirstChild.classList.add('active'); 
+  }
+
+  // These function are similar with player1VsPlayer2 with the exception player2 plays automatically.
+  const player1VsComputer = () => {
+    return startComputerGame();
+  }
+  const aiClick = (square) => {
+    if (typeof origBoard[square.target.id] === 'number') {
+      myMouseOver.playerO();
+        turn(square.target.id, huPlayer);
+      if (!checkTie()) computerTurn(bestSpot(), aiPlayer);
+      }
+   }
+   const huMark = () => {
       liFirstChild.classList.remove('player1');
       liFirstChild.classList.add('active');
       liFirstChild.setAttribute('id', 'player1');
     }
-   function aiTurn() {
+    const aiTurn = () => {
       liLastChild.classList.remove('player2');
       liLastChild.classList.add('active');
       liLastChild.setAttribute('id', 'player2');
     }
-    function removeHuMark() {
+    const removeHuMark = () => {
         liFirstChild.classList.remove('active');
     }
-    function removeAiTurn() {
+    const removeAiTurn = () => {
       liLastChild.classList.remove('active');
     }
-
- function turn(squareId, player) {
+  const computerTurn = (squareId, player) => {
   origBoard[squareId] = player;
-  if (player === huPlayer) {
-    document.getElementById(squareId).classList.add('box-filled-1');
-    setTimeout(removeAiTurn, 1000);
-  aiTurn();
-  } else {
+    if (player === huPlayer) {
+      document.getElementById(squareId).classList.add('box-filled-1');
+      setTimeout(removeAiTurn, 1000);
+      aiTurn();
+    } else {
+
     function aiMark() {
-      document.getElementById(squareId).classList.add('box-filled-2');
-    }
+    document.getElementById(squareId).classList.add('box-filled-2');
+  }
     setTimeout(aiMark, 500);
     setTimeout(huMark, 1000);
     setTimeout(removeHuMark, 200);
   }
-  let gameWon = checkWin(origBoard, player);
-  if (gameWon) gameOver(gameWon);
- }
-
-function checkWin(board, player) {
-  let plays = board.reduce((a, e, i) => (e === player) ? a.concat(i) : a, []);
-  let gameWon = null;
-  for (let [index, win] of winCombos.entries()) {
-    if (win.every(elem => plays.indexOf(elem) > -1)) {
-      gameWon = {index: index, player: player};
-      break;
-    }
+    let gameWon = checkWin(origBoard, player);
+    if (gameWon) gameOver(gameWon);
   }
-  return gameWon;
-}
-
-const gameOver = (gameWon) => {
-  winnerPage.classList.remove('hide-page');
-  startPage.classList.add('hide-page');
-  gamePage.classList.add('hide-page');
-
-  let loser = document.getElementsByClassName('message')[0];
-    for (let index of winCombos[gameWon.index]) {
-      winMessage.style.backgroundColor =
-      gameWon.player === huPlayer ? '#FFA000' : '#3688C3';
-    }
-    for (let i = 0; i < boxes.length; i++) {
-      boxes[i].removeEventListener('click', turnClick, false);
-    }
-  declareWinner(gameWon.player === huPlayer ? 'WinnerO' : 'Winner');
-}
-
-function declareWinner(who) {
-  winnerPage.classList.remove('hide-page');
-  startPage.classList.add('hide-page');
-  gamePage.classList.add('hide-page');
-  if (who === "It's a Tie!") {
-    winMessage.classList.add('screen-win-tie');
-  } else if (who === "WinnerO") {
-    winMessage.classList.add('screen-win-one');
-  } else {
-    winMessage.classList.add('screen-win-two');
+  function bestSpot(){
+    return minimax(origBoard, aiPlayer).index;
   }
 
-  winOrTie.innerHTML = who;
-}
-
-function emptySquares() {
-  return origBoard.filter(s => typeof s === 'number');
-}
-
-function bestSpot(){
-  return minimax(origBoard, aiPlayer).index;
-}
-
-function checkTie() {
-  if (emptySquares().length === 0) {
-    for (let i = 0; i < boxes.length; i++) {
-/* Clears out all the x's and o's on the board. -------------------------------------------- */
-      boxes[i].removeEventListener('click', turnClick, false);
-    }
-    declareWinner("It's a Tie!");
-    return true;
-  }
-  return false;
-}
-
-
-/* Gets the minimax algorithm. -------------------------------------------- */
+  /* This minimax algorithm was on utube and works well so I incorperated it. -------------------------------------------- */
 
 function minimax(newBoard, player) {
   var availSpots = emptySquares(newBoard);
@@ -241,15 +339,9 @@ function minimax(newBoard, player) {
   return moves[bestMove];
 }
 
+  /* ADD EVENTLISTENER ON THE CLICK EVENT ON THE START BUTTON ------------------------------------ */
+  document.querySelector('.button').addEventListener("click", getInfo, false);
 
-
-
-
-
-/* ADD EVENTLISTENER ON THE CLICK EVENT ON THE START BUTTON ------------------------------------ */
-document.querySelector('.button').addEventListener("click", getInfo, false);
-
-/* RESET GAME ---------------------------------------------------------------------------------- */
-document.getElementById('new-game').addEventListener('click', reset, false);
-
+  /* RESET GAME ---------------------------------------------------------------------------------- */
+  document.getElementById('new-game').addEventListener('click', reset, false);
 }());
