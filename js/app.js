@@ -5,15 +5,15 @@
 // Assign gobal variables to different pieces needed to create the tic-tac-toe game.
   let origBoard;
   let gameBoard;
-    let huPlayer = 'O'; 
-    let player1NameValue = document.getElementById('username1').value;
+  let huPlayer = 'O';
+  let aiPlayer = 'X'; 
+  let player1NameValue = document.getElementById('username1').value;
   let player2NameValue = document.getElementById('username2').value;
   const aiPlayerValue = 'Computer';
   const defaultPlayer1 = 'Player 1';
   const defaultPlayer2 = 'Player 2';
   let player1 = 'O';
   let player2 = 'X'
-  const aiPlayer = 'X';
   let turns = 0;
   const winCombos =[
     [0, 1, 2],
@@ -91,7 +91,8 @@
     for (let i = 0; i < boxes.length; i++) {
         boxes[i].classList.remove('box-filled-1');
         boxes[i].classList.remove('box-filled-2');
-      boxes[i].style.removeProperty('background-color');
+        boxes[i].style.removeProperty('background-color');
+        winMessage.style.backgroundColor = '';
         boxes[i].addEventListener('click', turnClick, false);
      }
   // This class is added to tell user who goes first which is O.
@@ -126,7 +127,7 @@
     } else {
       document.getElementsByTagName('h2')[0].innerHTML = `
           <span class="player1">${player1NameValue || defaultPlayer1}</span> 
-          vs <span class="player2">${player2NameValue || defaultPlayer2 || aiPlayerValue}</span>
+          vs <span class="player2">${player2NameValue || defaultPlayer2}</span>
         `;
       return player1VsPlayer2();
     }
@@ -190,14 +191,14 @@
       for (let i = 0; i < boxes.length; i++) {
       boxes[i].removeEventListener('click', turnClick, false);
     }
-   declareWinner(gameWon.player === huPlayer ? `Winner: ${player1NameValue}` : `Winner: ${player2NameValue || aiPlayerValue}`);
+   declareWinner(gameWon.player === huPlayer ? `Winner: ${player1NameValue || defaultPlayer1}` : `Winner: ${player2NameValue}` || `Winner: ${aiPlayerValue}`);
 
   }
 
   const declareWinner = (who) => {
     if (who === 'It\'s a Tie!') {
       winMessage.classList.add('screen-win-tie');
-    } else if (who === `Winner: ${player1NameValue}`) {
+    } else if (who === `Winner: ${player1NameValue || defaultPlayer1}`) {
 
       winMessage.classList.add('screen-win-one');
     } else if (who === `Winner: ${player2NameValue || aiPlayerValue }`) {
