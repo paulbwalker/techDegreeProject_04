@@ -5,9 +5,9 @@
 // Assign gobal variables to different pieces needed to create the tic-tac-toe game.
   let origBoard;
   let gameBoard;
-  let huPlayer = 'O';
-  let aiPlayer = 'X'; 
-  let player1NameValue = document.getElementById('username1').value;
+    let huPlayer = 'O'; 
+    let aiPlayer = 'X';
+    let player1NameValue = document.getElementById('username1').value;
   let player2NameValue = document.getElementById('username2').value;
   const aiPlayerValue = 'Computer';
   const defaultPlayer1 = 'Player 1';
@@ -91,8 +91,7 @@
     for (let i = 0; i < boxes.length; i++) {
         boxes[i].classList.remove('box-filled-1');
         boxes[i].classList.remove('box-filled-2');
-        boxes[i].style.removeProperty('background-color');
-        winMessage.style.backgroundColor = '';
+      boxes[i].style.removeProperty('background-color');
         boxes[i].addEventListener('click', turnClick, false);
      }
   // This class is added to tell user who goes first which is O.
@@ -191,17 +190,17 @@
       for (let i = 0; i < boxes.length; i++) {
       boxes[i].removeEventListener('click', turnClick, false);
     }
-   declareWinner(gameWon.player === huPlayer ? `Winner: ${player1NameValue || defaultPlayer1}` : `Winner: ${player2NameValue}` || `Winner: ${aiPlayerValue}`);
+   declareWinner(gameWon.player === huPlayer ? `Winner: ${player1NameValue}` : `Winner: ${player2NameValue}`);
 
   }
 
   const declareWinner = (who) => {
     if (who === 'It\'s a Tie!') {
       winMessage.classList.add('screen-win-tie');
-    } else if (who === `Winner: ${player1NameValue || defaultPlayer1}`) {
+    } else if (who === `Winner: ${player1NameValue}`) {
 
       winMessage.classList.add('screen-win-one');
-    } else if (who === `Winner: ${player2NameValue || aiPlayerValue }`) {
+    } else if (who === `Winner: ${player2NameValue || aiPlayerValue}`) {
       winMessage.classList.add('screen-win-two');
     }
     winOrTie.innerHTML = who;
@@ -236,7 +235,7 @@
         boxes[i].addEventListener('click', aiClick, false);
      }
      // This class is added to tell user who goes first which is O.
-     return liFirstChild.classList.add('active'); 
+    liFirstChild.classList.add('active'); 
   }
 
   // These function are similar with player1VsPlayer2 with the exception player2 plays automatically.
@@ -245,8 +244,7 @@
   }
   const aiClick = (square) => {
     if (typeof origBoard[square.target.id] === 'number') {
-      myMouseOver.playerO();
-        turn(square.target.id, huPlayer);
+        turn(square.target.id, huPlayer)
       if (!checkTie()) computerTurn(bestSpot(), aiPlayer);
       }
    }
@@ -267,19 +265,17 @@
       liLastChild.classList.remove('active');
     }
   const computerTurn = (squareId, player) => {
-  origBoard[squareId] = player;
+    origBoard[squareId] = player;
     if (player === huPlayer) {
       document.getElementById(squareId).classList.add('box-filled-1');
-      setTimeout(removeAiTurn, 1000);
       aiTurn();
     } else {
-
     function aiMark() {
     document.getElementById(squareId).classList.add('box-filled-2');
   }
     setTimeout(aiMark, 500);
     setTimeout(huMark, 1000);
-    setTimeout(removeHuMark, 200);
+    setTimeout(removeAiTurn, 200);
   }
     let gameWon = checkWin(origBoard, player);
     if (gameWon) gameOver(gameWon);
@@ -346,3 +342,4 @@ function minimax(newBoard, player) {
   /* RESET GAME ---------------------------------------------------------------------------------- */
   document.getElementById('new-game').addEventListener('click', reset, false);
 }());
+
